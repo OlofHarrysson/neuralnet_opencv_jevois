@@ -26,23 +26,15 @@ while(True):
     gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
 
     image = gray[0:160, 220:420] # Cuts out the region of interest
-    print(image.shape)
 
     # Display the resulting frame
     cv2.imshow('frame',image)
     if cv2.waitKey(1) & 0xFF == ord('q'):
+        np.save('img/test', image)
         break
+
 # When everything done, release the capture
 cap.release()
 cv2.destroyAllWindows()
 
-
-
-
-import matplotlib.pyplot as plt
-plt.subplot(221)
-plt.imshow(X_train[0], cmap=plt.get_cmap('gray'))
-plt.subplot(222)
-plt.imshow(X_train[1], cmap=plt.get_cmap('gray'))
-plt.show()
-
+cv2.waitKey(1)
