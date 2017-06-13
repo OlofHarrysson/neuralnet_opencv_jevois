@@ -1,8 +1,7 @@
 import os
 import sys
 os.environ['TF_CPP_MIN_LOG_LEVEL']='2' # Removes warning printouts
-import numpy
-from keras.datasets import mnist
+import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
 from keras.layers import Dropout
@@ -12,27 +11,38 @@ from keras.layers.convolutional import MaxPooling2D
 from keras.utils import np_utils
 from keras import backend as K
 K.set_image_dim_ordering('th')
+import pickle
 
 
 # fix random seed for reproducibility
 seed = 7
-numpy.random.seed(seed)
+np.random.seed(seed)
 
-(X_train, y_train), (X_test, y_test) = mnist.load_data()
+train_x = train_y = test_x = test_y = None
+with open ('data/expanded_mnist_train', 'rb') as fp:
+    train_x, train_y = pickle.load(fp)
 
-# reshape to be [samples][pixels][width][height]
-X_train = X_train.reshape(X_train.shape[0], 1, 28, 28).astype('float32')
-X_test = X_test.reshape(X_test.shape[0], 1, 28, 28).astype('float32')
+with open ('data/expanded_mnist_test', 'rb') as fp:
+    test_x, test_y = pickle.load(fp)
 
+
+# reshape to be [samples][channels][width][height]
+train_x = train_x.reshape(train_x.shape[0], 1, 28, 28).astype('float32')
+test_x = test_x.reshape(test_x.shape[0], 1, 28, 28).astype('float32')
 
 # normalize inputs from 0-255 to 0-1
-X_train = X_train / 255
-X_test = X_test / 255
-# one hot encode outputs
-y_train = np_utils.to_categorical(y_train)
-y_test = np_utils.to_categorical(y_test)
-num_classes = y_test.shape[1]
+train_x = train_x / 255
+test_x = test_x / 255
 
+train_y = np_utils.to_categorical(train_y)
+test_y = np_utils.to_categorical(test_y)
+num_classes = test_y.shape[1]
+
+validation_x = test_x[:25000]
+validation_y = test_y[:25000]
+
+test_x = test_x[25000:]
+test_y = test_y[25000:]
 
 def baseline_model():
     # create model
@@ -51,7 +61,9 @@ def baseline_model():
 # build the model
 model = baseline_model()
 # Fit the model
-model.fit(X_train, y_train, validation_data=(X_test, y_test), epochs=10, batch_size=200, verbose=2)
+model.fit(train_x, train_y, validation_data=(validation_x, validation_y), epochs=1, batch_size=200, verbose=2)
 # Final evaluation of the model
-scores = model.evaluate(X_test, y_test, verbose=0)
+scores = model.evaluate(test_x, test_y, verbose=0)
 print("Baseline Error: %.2f%%" % (100-scores[1]*100))
+
+model.save('data/models/conv.h5')
