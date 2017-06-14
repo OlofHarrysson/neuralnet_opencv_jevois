@@ -18,16 +18,12 @@ def bin_ndarray(ndarray, new_shape, operation='mean'):
         ndarray = op(-1*(i+1))
     return ndarray
 
-img = np.load('img/8' + '.npy')
-img = img[:, 20:180]
-img = bin_ndarray(img, (32,32))
-img = img[2:30, 2:30]
-img[img < 180] = 0
+sci_img = np.load('data/img/bicubic' + '.npy')
 
 (X_train, y_train), (X_test, y_test) = mnist.load_data()
 
 plt.subplot(221)
 plt.imshow(X_train[0], cmap=plt.get_cmap('gray'))
 plt.subplot(222)
-plt.imshow(img, cmap=plt.get_cmap('gray'))
+plt.imshow(sci_img, cmap=plt.get_cmap('gray'))
 plt.show()
