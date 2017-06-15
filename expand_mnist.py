@@ -15,15 +15,16 @@ def expand_img(img):
     img_right = np.insert(img_right, obj=0, values=np.zeros((4,28)), axis=1)
 
     # Uncomment to plot images
-    # plt.subplot(222)
-    # plt.imshow(img_up, cmap=plt.get_cmap('gray'))
-    # plt.subplot(223)
-    # plt.imshow(img_down, cmap=plt.get_cmap('gray'))
-    # plt.subplot(224)
-    # plt.imshow(img_left, cmap=plt.get_cmap('gray'))
-    # plt.subplot(221)
-    # plt.imshow(img_right, cmap=plt.get_cmap('gray'))
-    # plt.show()
+    plt.subplot(222)
+    plt.imshow(img_up, cmap=plt.get_cmap('gray'))
+    plt.subplot(223)
+    plt.imshow(img_down, cmap=plt.get_cmap('gray'))
+    plt.subplot(224)
+    plt.imshow(img_left, cmap=plt.get_cmap('gray'))
+    plt.subplot(221)
+    plt.imshow(img_right, cmap=plt.get_cmap('gray'))
+    plt.show()
+    sys.exit(1)
 
     return (img, img_up, img_left, img_down, img_right)
 

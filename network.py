@@ -10,6 +10,7 @@ from keras.layers.convolutional import Conv2D
 from keras.layers.convolutional import MaxPooling2D
 from keras.utils import np_utils
 from keras import backend as K
+from keras import regularizers
 K.set_image_dim_ordering('th')
 import pickle
 
@@ -47,12 +48,14 @@ test_y = test_y[25000:]
 def baseline_model():
     # create model
     model = Sequential()
-    model.add(Conv2D(32, (5, 5), input_shape=(1, 28, 28), activation='relu'))
+    model.add(Conv2D(32, (5, 5), input_shape=(1, 28, 28), activation='relu', kernel_regularizer=regularizers.l1(0.01)))
     model.add(MaxPooling2D(pool_size=(2, 2)))
-    model.add(Dropout(0.2))
+    model.add(Dropout(0.25))
+
     model.add(Flatten())
     model.add(Dense(128, activation='relu'))
-    model.add(Dense(num_classes, activation='softmax'))
+    model.add(Dropout(0.3))
+    model.add(Dense(num_classes, activation='softmax', kernel_regularizer=regularizers.l1(0.01)))
     # Compile model
     model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
     return model
@@ -61,7 +64,7 @@ def baseline_model():
 # build the model
 model = baseline_model()
 # Fit the model
-model.fit(train_x, train_y, validation_data=(validation_x, validation_y), epochs=1, batch_size=200, verbose=2)
+model.fit(train_x, train_y, validation_data=(validation_x, validation_y), epochs=5, batch_size=200, verbose=2)
 # Final evaluation of the model
 scores = model.evaluate(test_x, test_y, verbose=0)
 print("Baseline Error: %.2f%%" % (100-scores[1]*100))
